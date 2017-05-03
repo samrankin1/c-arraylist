@@ -10,26 +10,10 @@ typedef struct {
 	int capacity;
 } StringList;
 
-/*
+/**
 	TODO:
-	void list_remove_if(StringList* list, bool (*conditional_funct)(const char *));
-	void liar_remove_all(StringList* list, const StringList* to_remove);
-	;
-	;
-
-	StringList* list_sublist(const StringList* list, const int from, const int to);
-	StringList* list_clone(const StringList* source); // sublist from 0 to source->length
-	;
-	int list_index_of(const StringList* list, const char * element); // update delete methods to use this
-	int list_last_index_of(const StringList* list, const char * element);
-	;
-	bool list_is_empty(const StringList* list); // return (list_length(list) == 0);
-	void list_sort(const StringList* list, int (*comparator_funct)(const char *, const char *))); // quicksort
-	char*[] list_to_array(const StringList* list);
-	bool list_equal(const StringList* list, const StringList* other_list);
-	bool list_contains_all(const StringList* list, const StringList* must_contain);
 	char * list_to_string(const StringList* list);
-
+	void list_sort(const StringList* list, int (*comparator_funct)(const char *, const char *))); // quicksort
 **/
 
 void list_add_all(StringList* list, const StringList* source);
@@ -86,7 +70,7 @@ void _list_expand_auto(StringList* list) {
 	list_set_capacity(list, ((list->capacity * 1.5) + 1)); // 150% current capacity plus 1
 }
 
-char * list_get(StringList* list, const int index) {
+char * list_get(const StringList* list, const int index) {
 	assert(index < list->length); // make sure the index being retrieved actually exists
 
 	return list->list[index];
@@ -107,6 +91,24 @@ void list_set(StringList* list, const int index, const char * value) {
 	char * copy_buff = malloc((strlen(value) + 1) * sizeof(char)); // create a buffer for a copy of the 'value' string
 	strcpy(copy_buff, value); // copy the 'value' string into the buffer
 	list->list[index] = copy_buff; // set the pointer at the next index in the string to the buffer to permanize it
+}
+
+int list_index_of(const StringList* list, const char * element) {
+	for (int i = 0; i < list->length; i++) {
+		if (strcmp(list->list[i], element) == 0) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+int list_last_index_of(const StringList* list, const char * element) {
+	for (int i = (list->length - 1); i >= 0; i--) {
+		return i;
+	}
+
+	return -1;
 }
 
 void list_add(StringList* list, const char * value) {
@@ -136,6 +138,7 @@ void list_insert_all(StringList* list, const int index, StringList* source) {
 }
 
 void list_remove(StringList* list, const int index) {
+	assert(index >= 0);
 	assert(index < list->length); // make sure the index to be deleted actually exists
 
 	free(list->list[index]); // free the memory associated with this buffer before overwriting it
@@ -148,11 +151,9 @@ void list_remove(StringList* list, const int index) {
 }
 
 void list_remove_element(StringList* list, const char * element) {
-	for (int i = 0; i < list->length; i++) {
-		if (strcmp(list->list[i], element) == 0) {
-			list_remove(list, i);
-			break;
-		}
+	int index = list_index_of(list, element);
+	if (index != -1) { // if the element exists
+		list_remove(list, index);
 	}
 }
 
@@ -163,6 +164,21 @@ void list_remove_elements(StringList* list, const char * element) {
 			list_remove(list, i);
 		} else {
 			i++;
+		}
+	}
+}
+
+void list_remove_all(StringList* list, const StringList* to_remove) {
+	for (int i = 0; i < to_remove->length; i++) { // for each index in the to_remove List
+		list_remove_elements(list, to_remove->list[i]);
+	}
+}
+
+void list_remove_if(StringList* list, bool (*conditional_funct)(const char *)) {
+	// TODO: optimize?
+	for (int i = 0; i < list->length; i++) {
+		if (conditional_funct(list->list[i])) {
+			list_remove(list, i);
 		}
 	}
 }
@@ -184,9 +200,60 @@ int list_size(const StringList* list) {
 	return (list->length);
 }
 
+bool list_is_empty(const StringList* list) {
+	return (list->length == 0);
+}
+
 bool list_contains(const StringList* list, const char * element) {
-	for (int i = 0; i < list->length; i++) {
-		if (strcmp(list->list[i], element) == 0) {
+	return (list_index_of(list, element) != -1); // index_of returns -1 if the element was not found
+}
+
+bool list_contains_all(const StringList* list, const StringList* must_contain) {
+	for (int i = 0; i < must_contain->length; i++) { // for each index in the must_contain List
+		if (!list_contains(list, must_contain->list[i])) { // if the target list does not contain this element
+			return false; // the list does not "contain all"
+		}
+	}
+
+	return true; // if no missing elements were found, 'list' contains all elements in 'must_contain'
+}
+
+bool list_equals(const StringList* list_a, const StringList* list_b) {
+	if (list_a->length != list_b->length) { // the Lists cannot be equal if their lengths aren't equal
+		return false;
+	}
+
+	for (int i = 0; i < list_a->length; i++) { // for each index in both Lists
+		if (strcmp(list_a->list[i], list_b->list[i]) != 0) { // if the strings at this index in both Lists are not equal to each other
+			return false; // the Lists are not equal
+		}
+	}
+
+	return true; // if no mismatches were found, the Lists are equal
+}
+
+StringList* list_sublist(const StringList* list, const int from, const int to) {
+	assert(from >= 0); // make sure the 'from' index is not negative
+	assert(to < list->length); // make sure 'to' is an existing index in 'list'
+	assert(to > from);
+
+	StringList* result = list_init((to - from)); // initialize a new StringList with initial capacity exactly the finished size
+
+	for (int i = to; i < from; i++) { // for each index in [to, from)
+		list_add(result, list->list[i]); // add this element from the master list to the sublist
+	}
+
+	return result;
+}
+
+StringList* list_clone(const StringList* list) {
+	return list_sublist(list, 0, list->length); // return a sublist clone containing the entire original list
+}
+
+
+bool filter_funct(const char * element) {
+	for (int i = 0; i < strlen(element); i++) {
+		if (element[i] == 'a') {
 			return true;
 		}
 	}
@@ -211,14 +278,19 @@ int main() {
 
 	list_trim_capacity(list);
 
+	list_add(list, "abcdefg");
+	list_add(list, "bcdefgh");
+	list_add(list, "aaaaaaa");
+
+	list_print(list);
+
+	list_remove_if(list, &filter_funct);
+
+	list_trim_capacity(list);
 	list_print(list);
 
 	char * get = list_get(list, 1);
 	printf("got str: '%s'\n", get);
 
 	list_destroy(list);
-
-	char * test = malloc(5);
-	strcpy(test, "heyo");
-	test = realloc(test, 2);
 }

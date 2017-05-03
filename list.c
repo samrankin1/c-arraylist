@@ -11,16 +11,15 @@ typedef struct {
 } StringList;
 
 /*
-
 	TODO:
 	void list_remove_if(StringList* list, bool (*conditional_funct)(const char *));
 	void liar_remove_all(StringList* list, const StringList* to_remove);
-	void list_trim_capacity(StringList* list);
-	void list_clear(StringList* list);
+	;
+	;
 
 	StringList* list_sublist(const StringList* list, const int from, const int to);
 	StringList* list_clone(const StringList* source); // sublist from 0 to source->length
-	bool list_contains(const StringList* list, const char * element);
+	;
 	int list_index_of(const StringList* list, const char * element); // update delete methods to use this
 	int list_last_index_of(const StringList* list, const char * element);
 	;
@@ -45,7 +44,7 @@ StringList* list_init(const int capacity) {
 }
 
 StringList* list_init_duplicate(const StringList* source) {
-	StringList* result = list_init(source->length); // create a new StringList with the capacity of the source List'
+	StringList* result = list_init(source->length); // create a new StringList with the capacity of the source List
 	list_add_all(result, source);
 	return result;
 }
@@ -79,6 +78,10 @@ void list_ensure_capacity(StringList* list, const int min_capacity) {
 	}
 }
 
+void list_trim_capacity(StringList* list) {
+	list_set_capacity(list, list->length);
+}
+
 void _list_expand_auto(StringList* list) {
 	list_set_capacity(list, ((list->capacity * 1.5) + 1)); // 150% current capacity plus 1
 }
@@ -104,8 +107,6 @@ void list_set(StringList* list, const int index, const char * value) {
 	char * copy_buff = malloc((strlen(value) + 1) * sizeof(char)); // create a buffer for a copy of the 'value' string
 	strcpy(copy_buff, value); // copy the 'value' string into the buffer
 	list->list[index] = copy_buff; // set the pointer at the next index in the string to the buffer to permanize it
-
-
 }
 
 void list_add(StringList* list, const char * value) {
@@ -137,6 +138,8 @@ void list_insert_all(StringList* list, const int index, StringList* source) {
 void list_remove(StringList* list, const int index) {
 	assert(index < list->length); // make sure the index to be deleted actually exists
 
+	free(list->list[index]); // free the memory associated with this buffer before overwriting it
+
 	for (int i = index; i < (list->length - 1); i++) {
 		list->list[i] = list->list[(i + 1)];
 	}
@@ -164,6 +167,12 @@ void list_remove_elements(StringList* list, const char * element) {
 	}
 }
 
+void list_clear(StringList* list) {
+	for (int i = 0; i < list->length; i++) {
+		list_remove(list, i);
+	}
+}
+
 void list_print(const StringList* list) {
 	printf("list elements: %d/%d\n", list->length, list->capacity);
 	for (int i = 0; i < list->length; i++) {
@@ -173,6 +182,16 @@ void list_print(const StringList* list) {
 
 int list_size(const StringList* list) {
 	return (list->length);
+}
+
+bool list_contains(const StringList* list, const char * element) {
+	for (int i = 0; i < list->length; i++) {
+		if (strcmp(list->list[i], element) == 0) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int main() {
@@ -189,6 +208,8 @@ int main() {
 	list_remove_elements(list, "b");
 
 	list_insert(list, 1, "b");
+
+	list_trim_capacity(list);
 
 	list_print(list);
 

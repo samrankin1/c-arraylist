@@ -13,23 +13,17 @@ typedef struct {
 /*
 
 	TODO:
-	;
-
-	;
-
-	;
 	void list_remove_if(StringList* list, bool (*conditional_funct)(const char *));
 	void liar_remove_all(StringList* list, const StringList* to_remove);
 	void list_trim_capacity(StringList* list);
 	void list_clear(StringList* list);
-	void list_ensure_capacity(StringList* list, const int min_capacity);
 
 	StringList* list_sublist(const StringList* list, const int from, const int to);
 	StringList* list_clone(const StringList* source); // sublist from 0 to source->length
 	bool list_contains(const StringList* list, const char * element);
 	int list_index_of(const StringList* list, const char * element); // update delete methods to use this
 	int list_last_index_of(const StringList* list, const char * element);
-	int list_size(const StringList* list);
+	;
 	bool list_is_empty(const StringList* list); // return (list_length(list) == 0);
 	void list_sort(const StringList* list, int (*comparator_funct)(const char *, const char *))); // quicksort
 	char*[] list_to_array(const StringList* list);
@@ -38,6 +32,8 @@ typedef struct {
 	char * list_to_string(const StringList* list);
 
 **/
+
+void list_add_all(StringList* list, const StringList* source);
 
 StringList* list_init(const int capacity) {
 	StringList* result = malloc(sizeof(StringList));
@@ -49,7 +45,7 @@ StringList* list_init(const int capacity) {
 }
 
 StringList* list_init_duplicate(const StringList* source) {
-	StringList* result = list_init(list_size(source)); // create a new StringList with the capacity of the source List'
+	StringList* result = list_init(source->length); // create a new StringList with the capacity of the source List'
 	list_add_all(result, source);
 	return result;
 }
@@ -75,6 +71,12 @@ void list_set_capacity(StringList* list, const int new_capacity) {
 	list->list = realloc(list->list, (new_capacity * sizeof(char*))); // resize the memory allocated to this StringList's internal list
 
 	list->capacity = new_capacity; // update the list's stored capacity value
+}
+
+void list_ensure_capacity(StringList* list, const int min_capacity) {
+	if (min_capacity > list->capacity) {
+		list_set_capacity(list, min_capacity);
+	}
 }
 
 void _list_expand_auto(StringList* list) {
@@ -110,20 +112,21 @@ void list_add(StringList* list, const char * value) {
 	list_set(list, list->length, value);
 }
 
-void list_add_all(StringList* list, StringList* source) {
+void list_add_all(StringList* list, const StringList* source) {
 	for (int i = 0; i < source->length; i++) {
-		list_add(list, source[i]);
+		list_add(list, source->list[i]);
 	}
 }
 
 void list_insert(StringList* list, const int index, const char * value) {
-	list_ensure_capacity(list->length + 1); // make sure there's room for the added element
+	list_ensure_capacity(list, (list->length + 1)); // make sure there's room for the added element // TODO: auto expand?
 
 	for (int i = (list->length - 1); i > index; i--) { // descend down the internal list
-		list->list[(i + 1)] = list->list[i];
+		list->list[(i + 1)] = list->list[i]; // no copy needed, just move around the existing pointers
 	}
 
-	// TODO: insert value
+	list_set(list, index, value); // set the value at this index to a copy of the 'value' string
+	list->length++; // increment the length, as one element has been added to the list
 }
 
 void list_insert_all(StringList* list, const int index, StringList* source) {
@@ -144,7 +147,7 @@ void list_remove(StringList* list, const int index) {
 void list_remove_element(StringList* list, const char * element) {
 	for (int i = 0; i < list->length; i++) {
 		if (strcmp(list->list[i], element) == 0) {
-			list_del(list, i);
+			list_remove(list, i);
 			break;
 		}
 	}
@@ -154,7 +157,7 @@ void list_remove_elements(StringList* list, const char * element) {
 	int i = 0;
 	while (i < list->length) {
 		if (strcmp(list->list[i], element) == 0) {
-			list_del(list, i);
+			list_remove(list, i);
 		} else {
 			i++;
 		}
@@ -168,6 +171,10 @@ void list_print(const StringList* list) {
 	}
 }
 
+int list_size(const StringList* list) {
+	return (list->length);
+}
+
 int main() {
 	StringList* list = list_init(5);
 
@@ -177,13 +184,15 @@ int main() {
 	list_add(list, "d");
 	list_add(list, "e");
 
-	list_del(list, 3);
+	list_remove(list, 3);
 
-	list_del_elements(list, "b");
+	list_remove_elements(list, "b");
 
-	list_dump(list);
+	list_insert(list, 1, "b");
 
-	char * get = list_get(list, 2);
+	list_print(list);
+
+	char * get = list_get(list, 1);
 	printf("got str: '%s'\n", get);
 
 	list_destroy(list);

@@ -18,7 +18,7 @@ typedef struct {
 
 void list_add_all(StringList* list, const StringList* source);
 
-StringList* list_init(const int capacity) {
+StringList* list_init_capacity(const int capacity) {
 	StringList* result = malloc(sizeof(StringList));
 	result->list = malloc(capacity * sizeof(char*));
 	result->length = 0;
@@ -27,8 +27,12 @@ StringList* list_init(const int capacity) {
 	return result;
 }
 
+StringList* list_init() {
+	return list_init_capacity(10);
+}
+
 StringList* list_init_duplicate(const StringList* source) {
-	StringList* result = list_init(source->length); // create a new StringList with the capacity of the source List
+	StringList* result = list_init_capacity(source->length); // create a new StringList with the capacity of the source List
 	list_add_all(result, source);
 	return result;
 }
@@ -237,7 +241,7 @@ StringList* list_sublist(const StringList* list, const int from, const int to) {
 	assert(to < list->length); // make sure 'to' is an existing index in 'list'
 	assert(to > from);
 
-	StringList* result = list_init((to - from)); // initialize a new StringList with initial capacity exactly the finished size
+	StringList* result = list_init_capacity((to - from)); // initialize a new StringList with initial capacity exactly the finished size
 
 	for (int i = to; i < from; i++) { // for each index in [to, from)
 		list_add(result, list->list[i]); // add this element from the master list to the sublist
@@ -262,7 +266,7 @@ bool filter_funct(const char * element) {
 }
 
 int main() {
-	StringList* list = list_init(5);
+	StringList* list = list_init_capacity(200);
 
 	list_add(list, "a");
 	list_add(list, "b");
@@ -275,8 +279,6 @@ int main() {
 	list_remove_elements(list, "b");
 
 	list_insert(list, 1, "b");
-
-	list_trim_capacity(list);
 
 	list_add(list, "abcdefg");
 	list_add(list, "bcdefgh");

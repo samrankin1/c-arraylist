@@ -16,7 +16,7 @@ typedef struct {
 	void list_sort(const StringList* list, int (*comparator_funct)(const char *, const char *))); // quicksort
 **/
 
-void list_add_all(StringList* list, const StringList* source);
+void list_add_all(StringList* list,const StringList* source);
 
 StringList* list_init_capacity(const int capacity) {
 	StringList* result = malloc(sizeof(StringList));
@@ -43,6 +43,10 @@ void list_destroy(StringList* list) {
 	}
 	free(list->list);
 	free(list);
+}
+
+int list_capacity(const StringList* list) {
+	return (list->capacity);
 }
 
 void list_set_capacity(StringList* list, const int new_capacity) {
@@ -76,7 +80,7 @@ void _list_expand_auto(StringList* list) {
 
 char * list_get(const StringList* list, const int index) {
 	assert(index < list->length); // make sure the index being retrieved actually exists
-	assert(index > 0);
+	assert(index >= 0);
 
 	return list->list[index];
 }
@@ -112,7 +116,9 @@ int list_index_of(const StringList* list, const char * element) {
 
 int list_last_index_of(const StringList* list, const char * element) {
 	for (int i = (list->length - 1); i >= 0; i--) {
-		return i;
+		if (strcmp(list->list[i], element) == 0) {
+			return i;
+		}
 	}
 
 	return -1;
@@ -217,7 +223,7 @@ void list_print(const StringList* list) {
 	}
 }
 
-int list_size(const StringList* list) {
+int list_length(const StringList* list) {
 	return (list->length);
 }
 
@@ -269,78 +275,4 @@ StringList* list_sublist(const StringList* list, const int from, const int to) {
 
 StringList* list_clone(const StringList* list) {
 	return list_sublist(list, 0, list->length); // return a sublist clone containing the entire original list
-}
-
-
-bool filter_funct(const char * element) {
-	for (int i = 0; i < strlen(element); i++) {
-		if (element[i] == 'a') {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void announce_test(const char * test_name) {
-	printf("running test '%s'... ", test_name);
-}
-
-bool test_init_capacity() {
-	announce_test("list_init_capacity");
-
-	int capacity = 67;
-	StringList* list = list_init_capacity(capacity);
-
-	bool result = (list->capacity == capacity);
-
-	list_destroy(list);
-
-	return result;
-}
-
-bool test_clone() {
-	announce_test("list_clone");
-
-	StringList* list = list_init_capacity(3);
-	list_add(list, "1");
-	list_add(list, "2");
-	list_add(list, "3");
-
-	StringList* clone = list_clone(list);
-
-	bool result = list_equals(list, clone);
-
-	list_destroy(clone);
-	list_destroy(list);
-
-	return result;
-}
-
-int main() {
-
-	// add unit tests here and they will automatically be detected and executed
-	bool (*tests[])() = {
-		&test_init_capacity,
-		&test_clone,
-	};
-
-	int test_count = sizeof(tests) / sizeof(bool (*)());
-	printf("running %d test(s)...\n\n", test_count);
-	for (int i = 0; i < test_count; i++) {
-		bool result = tests[i]();
-
-		if (result) {
-			printf("PASS\n");
-		} else {
-			printf("FAIL\n\n");
-		}
-
-		assert(result); // halt testing on first failure
-	}
-
-	printf("\n");
-	printf("all tests completed successfully!\n");
-
-	return 0;
 }

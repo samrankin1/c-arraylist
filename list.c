@@ -76,13 +76,16 @@ void _list_expand_auto(StringList* list) {
 
 char * list_get(const StringList* list, const int index) {
 	assert(index < list->length); // make sure the index being retrieved actually exists
+	assert(index > 0);
 
 	return list->list[index];
 }
 
 void list_set(StringList* list, const int index, const char * value) {
 	// note: stores a carbon-copy of the 'value' string to make sure values are available until dismissed from the list
+	// printf("setting index '%d' (len = '%d')\n", index, list->length);
 	assert(index <= list->length); // i.e. lists can only be expended one at a time by setting a value one index past the end of the list
+	assert(index >= 0);
 
 	if (index == list->length) { // if this is a set() call for the n+1 element index (special case mentioned above)
 		if ((list->length + 1) > list->capacity) { // if more capacity will be needed to store something at this index
@@ -126,6 +129,9 @@ void list_add_all(StringList* list, const StringList* source) {
 }
 
 void list_insert(StringList* list, const int index, const char * value) {
+	assert(index < list->length);
+	assert(index >= 0);
+
 	list_ensure_capacity(list, (list->length + 1)); // make sure there's room for the added element // TODO: auto expand?
 
 	for (int i = (list->length - 1); i > index; i--) { // descend down the internal list
@@ -136,9 +142,20 @@ void list_insert(StringList* list, const int index, const char * value) {
 	list->length++; // increment the length, as one element has been added to the list
 }
 
-void list_insert_all(StringList* list, const int index, StringList* source) {
-	// move the entire tail of the array far enough back to fit the elements in source
-	// TODO here
+void list_insert_all(StringList* list, const int index, const StringList* source) {
+	assert(index < list->length);
+	assert(index >= 0);
+
+	list_ensure_capacity(list, (list->length + source->length)); // make sure the destination has enough space for both sets of elements
+	list->length += source->length;
+
+	for (int i = index; i < (list->length - source->length); i++) {
+		list_set(list, (i + source->length), list->list[i]); // move each string to the end of the new list
+	}
+
+	for (int i = 0; i < source->length; i++) {
+		list_set(list, (i + index), source->list[i]);
+	}
 }
 
 void list_remove(StringList* list, const int index) {
@@ -238,12 +255,12 @@ bool list_equals(const StringList* list_a, const StringList* list_b) {
 
 StringList* list_sublist(const StringList* list, const int from, const int to) {
 	assert(from >= 0); // make sure the 'from' index is not negative
-	assert(to < list->length); // make sure 'to' is an existing index in 'list'
+	assert(to <= list->length); // make sure 'to' is an existing index in 'list'
 	assert(to > from);
 
 	StringList* result = list_init_capacity((to - from)); // initialize a new StringList with initial capacity exactly the finished size
 
-	for (int i = to; i < from; i++) { // for each index in [to, from)
+	for (int i = from; i < to; i++) { // for each index in [to, from)
 		list_add(result, list->list[i]); // add this element from the master list to the sublist
 	}
 
@@ -265,34 +282,65 @@ bool filter_funct(const char * element) {
 	return false;
 }
 
-int main() {
-	StringList* list = list_init_capacity(200);
+void announce_test(const char * test_name) {
+	printf("running test '%s'... ", test_name);
+}
 
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "b");
-	list_add(list, "d");
-	list_add(list, "e");
+bool test_init_capacity() {
+	announce_test("list_init_capacity");
 
-	list_remove(list, 3);
+	int capacity = 67;
+	StringList* list = list_init_capacity(capacity);
 
-	list_remove_elements(list, "b");
-
-	list_insert(list, 1, "b");
-
-	list_add(list, "abcdefg");
-	list_add(list, "bcdefgh");
-	list_add(list, "aaaaaaa");
-
-	list_print(list);
-
-	list_remove_if(list, &filter_funct);
-
-	list_trim_capacity(list);
-	list_print(list);
-
-	char * get = list_get(list, 1);
-	printf("got str: '%s'\n", get);
+	bool result = (list->capacity == capacity);
 
 	list_destroy(list);
+
+	return result;
+}
+
+bool test_clone() {
+	announce_test("list_clone");
+
+	StringList* list = list_init_capacity(3);
+	list_add(list, "1");
+	list_add(list, "2");
+	list_add(list, "3");
+
+	StringList* clone = list_clone(list);
+
+	bool result = list_equals(list, clone);
+
+	list_destroy(clone);
+	list_destroy(list);
+
+	return result;
+}
+
+int main() {
+
+	// add unit tests here and they will automatically be detected and executed
+	bool (*tests[])() = {
+		&test_init_capacity,
+		&test_clone,
+	};
+
+	int test_count = sizeof(tests) / sizeof(bool (*)());
+	printf("running %d test(s)...\n\n", test_count);
+	for (int i = 0; i < test_count; i++) {
+		bool result = tests[i]();
+
+		if (result) {
+			printf("PASS\n");
+		} else {
+			printf("FAIL\n\n");
+		}
+
+		assert(result); // halt testing on first failure
+	}
+
+	printf("\n");
+	printf("all tests completed successfully!\n");
+
+	return 0;
 }

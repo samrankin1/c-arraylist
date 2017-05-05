@@ -16,7 +16,7 @@ typedef struct {
 	void list_sort(const StringList* list, int (*comparator_funct)(const char *, const char *))); // quicksort
 **/
 
-void list_add_all(StringList* list,const StringList* source);
+void list_add_all(StringList* list, const StringList* source);
 
 StringList* list_init_capacity(const int capacity) {
 	StringList* result = malloc(sizeof(StringList));

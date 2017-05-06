@@ -180,7 +180,8 @@ bool test_index_of() {
 	bool result = (
 		(list_index_of(list, "3") == 2) &&
 		(list_index_of(list, "2") == 1) &&
-		(list_index_of(list, "1") == 0)
+		(list_index_of(list, "1") == 0) &&
+		(list_index_of(list, "0") == -1)
 	);
 
 	list_destroy(list);
@@ -240,21 +241,56 @@ bool test_last_index_of() {
 bool test_capacity() {
 	announce_test("list_capacity");
 
-	// TODO
+	StringList* list = list_init();
 
-	return false;
+	bool result = (list_capacity(list) == list->capacity);
+
+	list_destroy(list);
+
+	return result;
 }
 
 bool test_set_capacity() {
 	announce_test("list_set_capacity");
 
-	// TODO
+	StringList* list = list_init_capacity(15);
 
-	return false;
+	int capacity = 43;
+	list_set_capacity(list, capacity);
+
+	// WARNING - will fail if List implementation expands capacity before necessary (default does not)
+	for (int i = 0; i < capacity; i++) {
+		list_add(list, "abc");
+	}
+
+	// TODO: ensure proper truncation if setting a capacity less than the current length
+
+	bool result = (list_capacity(list) == capacity);
+
+	list_destroy(list);
+
+	return result;
 }
 
 bool test_ensure_capacity() {
 	announce_test("list_ensure_capacity");
+
+	StringList* list = list_init_capacity(15);
+
+	int capacity = 34;
+	list_ensure_capacity(list, 22); // these numbers must be less than 'capacity'
+	list_ensure_capacity(list, 18);
+	list_ensure_capacity(list, capacity);
+
+	bool result = (list_capacity(list) >= capacity);
+
+	list_destroy(list);
+
+	return result;
+}
+
+bool test_length() {
+	announce_test("list_length");
 
 	// TODO
 
@@ -264,17 +300,19 @@ bool test_ensure_capacity() {
 bool test_trim_capacity() {
 	announce_test("list_trim_capacity");
 
-	// TODO
+	StringList* list = list_init_capacity(5);
 
-	return false;
-}
+	for (int i = 0; i < 50; i++) {
+		list_add(list, "abc");
+	}
 
-bool test_length() {
-	announce_test("list_length");
+	list_trim_capacity(list);
 
-	// TODO
+	bool result = (list_capacity(list) == list_length(list));
 
-	return false;
+	list_destroy(list);
+
+	return result;
 }
 
 bool test_is_empty() {

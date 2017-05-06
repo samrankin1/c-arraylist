@@ -214,30 +214,6 @@ bool test_last_index_of() {
 	return result;
 }
 
-/*
-	TESTS BELOW THIS LINE HAVE NOT BEEN STAGED YET
-*/
-
-/**
-	TODO:
-	void 	list_add_all(StringList* list,const StringList* source);
-	void 	list_insert(StringList* list,const int index,const char * value);
-	void 	list_insert_all(StringList* list,const int index,const StringList* source);
-
-	void	list_remove(StringList* list,const int index);
-	void	list_remove_element(StringList* list,const char * element);
-	void 	list_remove_elements(StringList* list,const char * element);
-	void 	list_remove_if(StringList* list,bool(*conditional_funct)(const char *));
-	void 	list_remove_all(StringList* list,const StringList* to_remove);
-	void 	list_clear(StringList* list);
-
-	bool 	list_contains_all(const StringList* list,const StringList* must_contain);
-
-	StringList* list_sublist(const StringList* list,const int from,const int to);
-
-	void 	list_print(const StringList* list);
-**/
-
 bool test_capacity() {
 	announce_test("list_capacity");
 
@@ -256,16 +232,24 @@ bool test_set_capacity() {
 	StringList* list = list_init_capacity(15);
 
 	int capacity = 43;
-	list_set_capacity(list, capacity);
-
-	// WARNING - will fail if List implementation expands capacity before necessary (default does not)
 	for (int i = 0; i < capacity; i++) {
 		list_add(list, "abc");
 	}
 
-	// TODO: ensure proper truncation if setting a capacity less than the current length
+	list_set_capacity(list, capacity);
 
-	bool result = (list_capacity(list) == capacity);
+	bool result_a = (list_capacity(list) == capacity);
+
+	for (int i = 0; i < 17; i++) { // how many to overwrite?
+		list_add(list, "abc");
+	}
+
+	list_set_capacity(list, capacity);
+
+	bool result = (
+		(result_a) &&
+		(list_capacity(list) == capacity)
+	);
 
 	list_destroy(list);
 
@@ -292,9 +276,18 @@ bool test_ensure_capacity() {
 bool test_length() {
 	announce_test("list_length");
 
-	// TODO
+	StringList* list = list_init_capacity(100);
 
-	return false;
+	int length = 51;
+	for (int i = 0; i < length; i++) {
+		list_add(list, "abc");
+	}
+
+	bool result = (list_length(list) == length);
+
+	list_destroy(list);
+
+	return result;
 }
 
 bool test_trim_capacity() {
@@ -318,10 +311,45 @@ bool test_trim_capacity() {
 bool test_is_empty() {
 	announce_test("list_is_empty");
 
-	// TODO
+	StringList* list = list_init();
 
-	return false;
+	bool result_a = (list_is_empty(list) == true);
+
+	list_add(list, "abc");
+
+	bool result = (
+		(result_a) &&
+		(list_is_empty(list) == false)
+	);
+
+	list_destroy(list);
+
+	return result;
 }
+
+/*
+	TESTS BELOW THIS LINE HAVE NOT BEEN STAGED YET
+*/
+
+/**
+	TODO:
+	void 	list_add_all(StringList* list,const StringList* source);
+	void 	list_insert(StringList* list,const int index,const char * value);
+	void 	list_insert_all(StringList* list,const int index,const StringList* source);
+
+	void	list_remove(StringList* list,const int index);
+	void	list_remove_element(StringList* list,const char * element);
+	void 	list_remove_elements(StringList* list,const char * element);
+	void 	list_remove_if(StringList* list,bool(*conditional_funct)(const char *));
+	void 	list_remove_all(StringList* list,const StringList* to_remove);
+	void 	list_clear(StringList* list);
+
+	bool 	list_contains_all(const StringList* list,const StringList* must_contain);
+
+	StringList* list_sublist(const StringList* list,const int from,const int to);
+
+	void 	list_print(const StringList* list);
+**/
 
 int main() {
 
@@ -338,6 +366,12 @@ int main() {
 		&test_set,
 		&test_index_of,
 		&test_last_index_of,
+		&test_capacity,
+		&test_set_capacity,
+		&test_ensure_capacity,
+		&test_length,
+		&test_trim_capacity,
+		&test_is_empty,
 	};
 
 	int test_count = sizeof(tests) / sizeof(bool (*)());

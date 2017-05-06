@@ -140,7 +140,7 @@ void list_insert(StringList* list, const int index, const char * value) {
 
 	list_ensure_capacity(list, (list->length + 1)); // make sure there's room for the added element // TODO: auto expand?
 
-	for (int i = (list->length - 1); i > index; i--) { // descend down the internal list
+	for (int i = (list->length - 1); i >= index; i--) { // descend down the internal list
 		list->list[(i + 1)] = list->list[i]; // no copy needed, just move around the existing pointers
 	}
 
@@ -202,17 +202,19 @@ void list_remove_all(StringList* list, const StringList* to_remove) {
 }
 
 void list_remove_if(StringList* list, bool (*conditional_funct)(const char *)) {
-	// TODO: optimize?
-	for (int i = 0; i < list->length; i++) {
+	int i = 0;
+	while (i < list->length) {
 		if (conditional_funct(list->list[i])) {
 			list_remove(list, i);
+		} else {
+			i++;
 		}
 	}
 }
 
 void list_clear(StringList* list) {
-	for (int i = 0; i < list->length; i++) {
-		list_remove(list, i);
+	while (list->length > 0) {
+		list_remove(list, 0);
 	}
 }
 

@@ -97,6 +97,8 @@ void list_set(StringList* list, const int index, const char * value) {
 		}
 
 		list->length++; // increase the length regardless, there is a new valid index
+	} else { // if this set() call will overwrite an existing element in the list
+		free(list->list[index]); // free the memory at the pointer to be overwritten
 	}
 
 	char * copy_buff = malloc((strlen(value) + 1) * sizeof(char)); // create a buffer for a copy of the 'value' string

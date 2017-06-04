@@ -45,8 +45,8 @@ bool test_contains() {
 	list_add(list, "123");
 
 	bool result = (
-		(list_contains(list, "123")) &&
-		(!list_contains(list, "234"))
+		list_contains(list, "123") &&
+		!list_contains(list, "234")
 	);
 
 	list_destroy(list);
@@ -247,7 +247,7 @@ bool test_set_capacity() {
 	list_set_capacity(list, capacity);
 
 	bool result = (
-		(result_a) &&
+		result_a &&
 		(list_capacity(list) == capacity)
 	);
 
@@ -318,7 +318,7 @@ bool test_is_empty() {
 	list_add(list, "abc");
 
 	bool result = (
-		(result_a) &&
+		result_a &&
 		(list_is_empty(list) == false)
 	);
 
@@ -350,7 +350,7 @@ bool test_add_all() {
 	list_add(expected, "b");
 	list_add(expected, "c");
 
-	bool result = (list_equals(list_a, expected));
+	bool result = list_equals(list_a, expected);
 
 	list_destroy(list_a);
 	list_destroy(list_b);
@@ -375,7 +375,7 @@ bool test_insert() {
 	list_add(expected, "b");
 	list_add(expected, "c");
 
-	bool result = (list_equals(list, expected));
+	bool result = list_equals(list, expected);
 
 	list_destroy(list);
 	list_destroy(expected);
@@ -406,7 +406,7 @@ bool test_insert_all() {
 	list_add(expected, "b");
 	list_add(expected, "c");
 
-	bool result = (list_equals(list_a, expected));
+	bool result = list_equals(list_a, expected);
 
 	list_destroy(list_a);
 	list_destroy(list_b);
@@ -429,7 +429,7 @@ bool test_remove() {
 	list_add(expected, "a");
 	list_add(expected, "b");
 
-	bool result = (list_equals(list, expected));
+	bool result = list_equals(list, expected);
 
 	list_destroy(list);
 	list_destroy(expected);
@@ -451,7 +451,7 @@ bool test_remove_element() {
 	StringList* expected = list_init();
 	list_add(expected, "b");
 
-	bool result = (list_equals(list, expected));
+	bool result = list_equals(list, expected);
 
 	list_destroy(list);
 	list_destroy(expected);
@@ -477,7 +477,7 @@ bool test_remove_elements() {
 	list_add(expected, "b");
 	list_add(expected, "b");
 
-	bool result = (list_equals(list, expected));
+	bool result = list_equals(list, expected);
 
 	list_destroy(list);
 	list_destroy(expected);
@@ -485,6 +485,7 @@ bool test_remove_elements() {
 	return result;
 }
 
+/* remove if the element string does not contain the char 'b' */
 bool conditional_funct(const char * element) {
 	for (int i = 0; i < strlen(element); i++) {
 		if (*(element + i) == 'b') {
@@ -512,7 +513,7 @@ bool test_remove_if() {
 	list_add(expected, "789b");
 	list_add(expected, "012b");
 
-	bool result = (list_equals(list, expected));
+	bool result = list_equals(list, expected);
 
 	list_destroy(list);
 	list_destroy(expected);
@@ -541,7 +542,7 @@ bool test_remove_all() {
 	list_add(expected, "b");
 	list_add(expected, "b");
 
-	bool result = (list_equals(list, expected));
+	bool result = list_equals(list, expected);
 
 	list_destroy(list);
 	list_destroy(to_remove);
@@ -566,7 +567,7 @@ bool test_clear() {
 	StringList* expected = list_init();
 	// this line intentionally left blank
 
-	bool result = (list_equals(list, expected));
+	bool result = list_equals(list, expected);
 
 	list_destroy(list);
 	list_destroy(expected);

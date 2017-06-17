@@ -575,23 +575,44 @@ bool test_clear() {
 	return result;
 }
 
-/*
-	TESTS BELOW THIS LINE HAVE NOT BEEN STAGED YET
-*/
-
 bool test_contains_all() {
 	announce_test("list_contains_all");
 
 	StringList* list = list_init();
+	list_add(list, "a");
+	list_add(list, "b");
+	list_add(list, "c");
+	list_add(list, "d");
+	list_add(list, "e");
+	list_add(list, "f");
 
-	// TODO
 
-	bool result = false;
+	StringList* sublist = list_init();
+	list_add(sublist, "f");
+	list_add(sublist, "a");
+	list_add(sublist, "d");
+	list_add(sublist, "e");
+	list_add(sublist, "b");
+	list_add(sublist, "f");
+
+	bool result_a = list_contains_all(list, sublist);
+
+	list_add(sublist, "z"); // add an element not in the original list
+
+	bool result = (
+		result_a &&
+		!list_contains_all(list, sublist)
+	);
 
 	list_destroy(list);
+	list_destroy(sublist);
 
 	return result;
 }
+
+/*
+	TESTS BELOW THIS LINE HAVE NOT BEEN STAGED YET
+*/
 
 bool test_sublist() {
 	announce_test("list_sublist");
@@ -637,6 +658,7 @@ int main() {
 		&test_remove_if,
 		&test_remove_all,
 		&test_clear,
+		&test_contains_all,
 	};
 
 	int test_count = sizeof(tests) / sizeof(bool (*)());

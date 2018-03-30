@@ -97,24 +97,6 @@ bool test_equals() {
 	return result;
 }
 
-bool test_init_duplicate() {
-	announce_test("list_init_duplicate");
-
-	StringList* list = list_init_capacity(3);
-	list_add(list, "1");
-	list_add(list, "2");
-	list_add(list, "3");
-
-	StringList* new_list = list_init_duplicate(list);
-
-	bool result = list_equals(list, new_list);
-
-	list_destroy(list);
-	list_destroy(new_list);
-
-	return result;
-}
-
 bool test_clone() {
 	announce_test("list_clone");
 
@@ -487,7 +469,8 @@ bool test_remove_elements() {
 
 /* remove if the element string does not contain the char 'b' */
 bool conditional_funct(const char * element) {
-	for (int i = 0; i < strlen(element); i++) {
+	size_t len = strlen(element);
+	for (int i = 0; i < len; i++) {
 		if (*(element + i) == 'b') {
 			return false;
 		}
@@ -637,7 +620,6 @@ int main() {
 		&test_contains,
 		&test_add,
 		&test_equals,
-		&test_init_duplicate,
 		&test_clone,
 		&test_get,
 		&test_set,

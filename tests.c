@@ -13,14 +13,14 @@ void announce_test(const char * test_name) {
 bool test_init() {
 	announce_test("list_init");
 
-	StringList* list = list_init();
+	StringList* list = listNew();
 
 	bool result = (
 		(list->capacity == 10) &&
 		(list->length == 0)
 	);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -29,11 +29,11 @@ bool test_init_capacity() {
 	announce_test("list_init_capacity");
 
 	int capacity = 67;
-	StringList* list = list_init_capacity(capacity);
+	StringList* list = listNewCapacity(capacity);
 
 	bool result = (list->capacity == capacity);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -41,15 +41,15 @@ bool test_init_capacity() {
 bool test_contains() {
 	announce_test("list_contains");
 
-	StringList* list = list_init_capacity(1);
-	list_add(list, "123");
+	StringList* list = listNewCapacity(1);
+	listAdd(list, "123");
 
 	bool result = (
-		list_contains(list, "123") &&
-		!list_contains(list, "234")
+		listContains(list, "123") &&
+		!listContains(list, "234")
 	);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -57,12 +57,12 @@ bool test_contains() {
 bool test_add() {
 	announce_test("list_add");
 
-	StringList* list = list_init_capacity(1);
-	list_add(list, "123");
+	StringList* list = listNewCapacity(1);
+	listAdd(list, "123");
 
-	bool result = list_contains(list, "123");
+	bool result = listContains(list, "123");
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -70,29 +70,29 @@ bool test_add() {
 bool test_equals() {
 	announce_test("list_equals");
 
-	StringList* list_a = list_init_capacity(3);
-	list_add(list_a, "1");
-	list_add(list_a, "2");
-	list_add(list_a, "3");
+	StringList* list_a = listNewCapacity(3);
+	listAdd(list_a, "1");
+	listAdd(list_a, "2");
+	listAdd(list_a, "3");
 
-	StringList* list_b = list_init_capacity(3);
-	list_add(list_b, "1");
-	list_add(list_b, "2");
-	list_add(list_b, "3");
+	StringList* list_b = listNewCapacity(3);
+	listAdd(list_b, "1");
+	listAdd(list_b, "2");
+	listAdd(list_b, "3");
 
-	StringList* list_c = list_init_capacity(3);
-	list_add(list_c, "a");
-	list_add(list_c, "b");
-	list_add(list_c, "c");
+	StringList* list_c = listNewCapacity(3);
+	listAdd(list_c, "a");
+	listAdd(list_c, "b");
+	listAdd(list_c, "c");
 
 	bool result = (
-		list_equals(list_a, list_b) &&
-		!list_equals(list_b, list_c)
+		listEquals(list_a, list_b) &&
+		!listEquals(list_b, list_c)
 	);
 
-	list_destroy(list_a);
-	list_destroy(list_b);
-	list_destroy(list_c);
+	listDestroy(list_a);
+	listDestroy(list_b);
+	listDestroy(list_c);
 
 	return result;
 }
@@ -100,17 +100,17 @@ bool test_equals() {
 bool test_clone() {
 	announce_test("list_clone");
 
-	StringList* list = list_init_capacity(3);
-	list_add(list, "1");
-	list_add(list, "2");
-	list_add(list, "3");
+	StringList* list = listNewCapacity(3);
+	listAdd(list, "1");
+	listAdd(list, "2");
+	listAdd(list, "3");
 
-	StringList* clone = list_clone(list);
+	StringList* clone = listClone(list);
 
-	bool result = list_equals(list, clone);
+	bool result = listEquals(list, clone);
 
-	list_destroy(clone);
-	list_destroy(list);
+	listDestroy(clone);
+	listDestroy(list);
 
 	return result;
 }
@@ -118,18 +118,18 @@ bool test_clone() {
 bool test_get() {
 	announce_test("list_get");
 
-	StringList* list = list_init_capacity(3);
-	list_add(list, "1");
-	list_add(list, "2");
-	list_add(list, "3");
+	StringList* list = listNewCapacity(3);
+	listAdd(list, "1");
+	listAdd(list, "2");
+	listAdd(list, "3");
 
 	bool result = (
-		(strcmp(list_get(list, 0), "1") == 0) &&
-		(strcmp(list_get(list, 1), "2") == 0) &&
-		(strcmp(list_get(list, 2), "3") == 0)
+		(strcmp(listGet(list, 0), "1") == 0) &&
+		(strcmp(listGet(list, 1), "2") == 0) &&
+		(strcmp(listGet(list, 2), "3") == 0)
 	);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -137,16 +137,16 @@ bool test_get() {
 bool test_set() {
 	announce_test("list_set");
 
-	StringList* list = list_init_capacity(3);
-	list_add(list, "1");
-	list_add(list, "2");
-	list_add(list, "3");
+	StringList* list = listNewCapacity(3);
+	listAdd(list, "1");
+	listAdd(list, "2");
+	listAdd(list, "3");
 
-	list_set(list, 1, "abc");
+	listSet(list, 1, "abc");
 
-	bool result = (strcmp(list_get(list, 1), "abc") == 0);
+	bool result = (strcmp(listGet(list, 1), "abc") == 0);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -154,19 +154,19 @@ bool test_set() {
 bool test_index_of() {
 	announce_test("list_index_of");
 
-	StringList* list = list_init_capacity(3);
-	list_add(list, "1");
-	list_add(list, "2");
-	list_add(list, "3");
+	StringList* list = listNewCapacity(3);
+	listAdd(list, "1");
+	listAdd(list, "2");
+	listAdd(list, "3");
 
 	bool result = (
-		(list_index_of(list, "3") == 2) &&
-		(list_index_of(list, "2") == 1) &&
-		(list_index_of(list, "1") == 0) &&
-		(list_index_of(list, "0") == -1)
+		(listIndexOf(list, "3") == 2) &&
+		(listIndexOf(list, "2") == 1) &&
+		(listIndexOf(list, "1") == 0) &&
+		(listIndexOf(list, "0") == -1)
 	);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -174,24 +174,24 @@ bool test_index_of() {
 bool test_last_index_of() {
 	announce_test("list_last_index_of");
 
-	StringList* list = list_init_capacity(7);
-	list_add(list, "0");
-	list_add(list, "1");
-	list_add(list, "2");
-	list_add(list, "3");
-	list_add(list, "3"); // i = 4
-	list_add(list, "2"); // i = 5
-	list_add(list, "1"); // i = 6
+	StringList* list = listNewCapacity(7);
+	listAdd(list, "0");
+	listAdd(list, "1");
+	listAdd(list, "2");
+	listAdd(list, "3");
+	listAdd(list, "3"); // i = 4
+	listAdd(list, "2"); // i = 5
+	listAdd(list, "1"); // i = 6
 
 	bool result = (
-		(list_last_index_of(list, "1") == 6) &&
-		(list_last_index_of(list, "2") == 5) &&
-		(list_last_index_of(list, "3") == 4) &&
-		(list_last_index_of(list, "0") == 0) &&
-		(list_last_index_of(list, "5") == -1)
+		(listLastIndexOf(list, "1") == 6) &&
+		(listLastIndexOf(list, "2") == 5) &&
+		(listLastIndexOf(list, "3") == 4) &&
+		(listLastIndexOf(list, "0") == 0) &&
+		(listLastIndexOf(list, "5") == -1)
 	);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -199,11 +199,11 @@ bool test_last_index_of() {
 bool test_capacity() {
 	announce_test("list_capacity");
 
-	StringList* list = list_init();
+	StringList* list = listNew();
 
-	bool result = (list_capacity(list) == list->capacity);
+	bool result = (listCapacity(list) == list->capacity);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -211,29 +211,29 @@ bool test_capacity() {
 bool test_set_capacity() {
 	announce_test("list_set_capacity");
 
-	StringList* list = list_init_capacity(15);
+	StringList* list = listNewCapacity(15);
 
 	int capacity = 43;
 	for (int i = 0; i < capacity; i++) {
-		list_add(list, "abc");
+		listAdd(list, "abc");
 	}
 
-	list_set_capacity(list, capacity);
+	listSetCapacity(list, capacity);
 
-	bool result_a = (list_capacity(list) == capacity);
+	bool result_a = (listCapacity(list) == capacity);
 
 	for (int i = 0; i < 17; i++) { // how many to overwrite?
-		list_add(list, "abc");
+		listAdd(list, "abc");
 	}
 
-	list_set_capacity(list, capacity);
+	listSetCapacity(list, capacity);
 
 	bool result = (
 		result_a &&
-		(list_capacity(list) == capacity)
+		(listCapacity(list) == capacity)
 	);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -241,16 +241,16 @@ bool test_set_capacity() {
 bool test_ensure_capacity() {
 	announce_test("list_ensure_capacity");
 
-	StringList* list = list_init_capacity(15);
+	StringList* list = listNewCapacity(15);
 
 	int capacity = 34;
-	list_ensure_capacity(list, 22); // these numbers must be less than 'capacity'
-	list_ensure_capacity(list, 18);
-	list_ensure_capacity(list, capacity);
+	listEnsureCapacity(list, 22); // these numbers must be less than 'capacity'
+	listEnsureCapacity(list, 18);
+	listEnsureCapacity(list, capacity);
 
-	bool result = (list_capacity(list) >= capacity);
+	bool result = (listCapacity(list) >= capacity);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -258,16 +258,16 @@ bool test_ensure_capacity() {
 bool test_length() {
 	announce_test("list_length");
 
-	StringList* list = list_init_capacity(100);
+	StringList* list = listNewCapacity(100);
 
 	int length = 51;
 	for (int i = 0; i < length; i++) {
-		list_add(list, "abc");
+		listAdd(list, "abc");
 	}
 
-	bool result = (list_length(list) == length);
+	bool result = (listLength(list) == length);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -275,17 +275,17 @@ bool test_length() {
 bool test_trim_capacity() {
 	announce_test("list_trim_capacity");
 
-	StringList* list = list_init_capacity(5);
+	StringList* list = listNewCapacity(5);
 
 	for (int i = 0; i < 50; i++) {
-		list_add(list, "abc");
+		listAdd(list, "abc");
 	}
 
-	list_trim_capacity(list);
+	listTrimCapacity(list);
 
-	bool result = (list_capacity(list) == list_length(list));
+	bool result = (listCapacity(list) == listLength(list));
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -293,18 +293,18 @@ bool test_trim_capacity() {
 bool test_is_empty() {
 	announce_test("list_is_empty");
 
-	StringList* list = list_init();
+	StringList* list = listNew();
 
-	bool result_a = (list_is_empty(list) == true);
+	bool result_a = (listIsEmpty(list) == true);
 
-	list_add(list, "abc");
+	listAdd(list, "abc");
 
 	bool result = (
 		result_a &&
-		(list_is_empty(list) == false)
+		(listIsEmpty(list) == false)
 	);
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
@@ -312,31 +312,31 @@ bool test_is_empty() {
 bool test_add_all() {
 	announce_test("list_add_all");
 
-	StringList* list_a = list_init();
-	list_add(list_a, "1");
-	list_add(list_a, "2");
-	list_add(list_a, "3");
+	StringList* list_a = listNew();
+	listAdd(list_a, "1");
+	listAdd(list_a, "2");
+	listAdd(list_a, "3");
 
-	StringList* list_b = list_init();
-	list_add(list_b, "a");
-	list_add(list_b, "b");
-	list_add(list_b, "c");
+	StringList* list_b = listNew();
+	listAdd(list_b, "a");
+	listAdd(list_b, "b");
+	listAdd(list_b, "c");
 
-	list_add_all(list_a, list_b);
+	listAddAll(list_a, list_b);
 
-	StringList* expected = list_init();
-	list_add(expected, "1");
-	list_add(expected, "2");
-	list_add(expected, "3");
-	list_add(expected, "a");
-	list_add(expected, "b");
-	list_add(expected, "c");
+	StringList* expected = listNew();
+	listAdd(expected, "1");
+	listAdd(expected, "2");
+	listAdd(expected, "3");
+	listAdd(expected, "a");
+	listAdd(expected, "b");
+	listAdd(expected, "c");
 
-	bool result = list_equals(list_a, expected);
+	bool result = listEquals(list_a, expected);
 
-	list_destroy(list_a);
-	list_destroy(list_b);
-	list_destroy(expected);
+	listDestroy(list_a);
+	listDestroy(list_b);
+	listDestroy(expected);
 
 	return result;
 }
@@ -344,23 +344,23 @@ bool test_add_all() {
 bool test_insert() {
 	announce_test("list_insert");
 
-	StringList* list = list_init();
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
+	StringList* list = listNew();
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
 
-	list_insert(list, 1, "0");
+	listInsert(list, 1, "0");
 
-	StringList* expected = list_init();
-	list_add(expected, "a");
-	list_add(expected, "0");
-	list_add(expected, "b");
-	list_add(expected, "c");
+	StringList* expected = listNew();
+	listAdd(expected, "a");
+	listAdd(expected, "0");
+	listAdd(expected, "b");
+	listAdd(expected, "c");
 
-	bool result = list_equals(list, expected);
+	bool result = listEquals(list, expected);
 
-	list_destroy(list);
-	list_destroy(expected);
+	listDestroy(list);
+	listDestroy(expected);
 
 	return result;
 }
@@ -368,31 +368,31 @@ bool test_insert() {
 bool test_insert_all() {
 	announce_test("list_insert_all");
 
-	StringList* list_a = list_init();
-	list_add(list_a, "a");
-	list_add(list_a, "b");
-	list_add(list_a, "c");
+	StringList* list_a = listNew();
+	listAdd(list_a, "a");
+	listAdd(list_a, "b");
+	listAdd(list_a, "c");
 
-	StringList* list_b = list_init();
-	list_add(list_b, "1");
-	list_add(list_b, "2");
-	list_add(list_b, "3");
+	StringList* list_b = listNew();
+	listAdd(list_b, "1");
+	listAdd(list_b, "2");
+	listAdd(list_b, "3");
 
-	list_insert_all(list_a, 0 , list_b);
+	listInsertAll(list_a, 0 , list_b);
 
-	StringList* expected = list_init();
-	list_add(expected, "1");
-	list_add(expected, "2");
-	list_add(expected, "3");
-	list_add(expected, "a");
-	list_add(expected, "b");
-	list_add(expected, "c");
+	StringList* expected = listNew();
+	listAdd(expected, "1");
+	listAdd(expected, "2");
+	listAdd(expected, "3");
+	listAdd(expected, "a");
+	listAdd(expected, "b");
+	listAdd(expected, "c");
 
-	bool result = list_equals(list_a, expected);
+	bool result = listEquals(list_a, expected);
 
-	list_destroy(list_a);
-	list_destroy(list_b);
-	list_destroy(expected);
+	listDestroy(list_a);
+	listDestroy(list_b);
+	listDestroy(expected);
 
 	return result;
 }
@@ -400,21 +400,21 @@ bool test_insert_all() {
 bool test_remove() {
 	announce_test("list_remove");
 
-	StringList* list = list_init();
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
+	StringList* list = listNew();
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
 
-	list_remove(list, 2);
+	listRemove(list, 2);
 
-	StringList* expected = list_init();
-	list_add(expected, "a");
-	list_add(expected, "b");
+	StringList* expected = listNew();
+	listAdd(expected, "a");
+	listAdd(expected, "b");
 
-	bool result = list_equals(list, expected);
+	bool result = listEquals(list, expected);
 
-	list_destroy(list);
-	list_destroy(expected);
+	listDestroy(list);
+	listDestroy(expected);
 
 	return result;
 }
@@ -422,21 +422,21 @@ bool test_remove() {
 bool test_remove_element() {
 	announce_test("list_remove_element");
 
-	StringList* list = list_init();
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
+	StringList* list = listNew();
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
 
-	list_remove_element(list, "a");
-	list_remove_element(list, "c");
+	listRemoveElement(list, "a");
+	listRemoveElement(list, "c");
 
-	StringList* expected = list_init();
-	list_add(expected, "b");
+	StringList* expected = listNew();
+	listAdd(expected, "b");
 
-	bool result = list_equals(list, expected);
+	bool result = listEquals(list, expected);
 
-	list_destroy(list);
-	list_destroy(expected);
+	listDestroy(list);
+	listDestroy(expected);
 
 	return result;
 }
@@ -444,25 +444,25 @@ bool test_remove_element() {
 bool test_remove_elements() {
 	announce_test("list_remove_elements");
 
-	StringList* list = list_init();
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
+	StringList* list = listNew();
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
 
-	list_remove_elements(list, "a");
-	list_remove_elements(list, "c");
+	listRemoveElements(list, "a");
+	listRemoveElements(list, "c");
 
-	StringList* expected = list_init();
-	list_add(expected, "b");
-	list_add(expected, "b");
+	StringList* expected = listNew();
+	listAdd(expected, "b");
+	listAdd(expected, "b");
 
-	bool result = list_equals(list, expected);
+	bool result = listEquals(list, expected);
 
-	list_destroy(list);
-	list_destroy(expected);
+	listDestroy(list);
+	listDestroy(expected);
 
 	return result;
 }
@@ -482,24 +482,24 @@ bool conditional_funct(const char * element) {
 bool test_remove_if() {
 	announce_test("list_remove_if");
 
-	StringList* list = list_init();
-	list_add(list, "123a");
-	list_add(list, "456a");
-	list_add(list, "789b");
-	list_add(list, "012b");
-	list_add(list, "345c");
-	list_add(list, "678c");
+	StringList* list = listNew();
+	listAdd(list, "123a");
+	listAdd(list, "456a");
+	listAdd(list, "789b");
+	listAdd(list, "012b");
+	listAdd(list, "345c");
+	listAdd(list, "678c");
 
-	list_remove_if(list, &conditional_funct);
+	listRemoveIf(list, &conditional_funct);
 
-	StringList* expected = list_init();
-	list_add(expected, "789b");
-	list_add(expected, "012b");
+	StringList* expected = listNew();
+	listAdd(expected, "789b");
+	listAdd(expected, "012b");
 
-	bool result = list_equals(list, expected);
+	bool result = listEquals(list, expected);
 
-	list_destroy(list);
-	list_destroy(expected);
+	listDestroy(list);
+	listDestroy(expected);
 
 	return result;
 }
@@ -507,29 +507,29 @@ bool test_remove_if() {
 bool test_remove_all() {
 	announce_test("list_remove_all");
 
-	StringList* list = list_init();
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
+	StringList* list = listNew();
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
 
-	StringList* to_remove = list_init();
-	list_add(to_remove, "c");
-	list_add(to_remove, "a");
+	StringList* to_remove = listNew();
+	listAdd(to_remove, "c");
+	listAdd(to_remove, "a");
 
-	list_remove_all(list, to_remove);
+	listRemoveAll(list, to_remove);
 
-	StringList* expected = list_init();
-	list_add(expected, "b");
-	list_add(expected, "b");
+	StringList* expected = listNew();
+	listAdd(expected, "b");
+	listAdd(expected, "b");
 
-	bool result = list_equals(list, expected);
+	bool result = listEquals(list, expected);
 
-	list_destroy(list);
-	list_destroy(to_remove);
-	list_destroy(expected);
+	listDestroy(list);
+	listDestroy(to_remove);
+	listDestroy(expected);
 
 	return result;
 }
@@ -537,23 +537,23 @@ bool test_remove_all() {
 bool test_clear() {
 	announce_test("list_clear");
 
-	StringList* list = list_init();
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
+	StringList* list = listNew();
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
 
-	list_clear(list);
+	listClear(list);
 
-	StringList* expected = list_init();
+	StringList* expected = listNew();
 	// this line intentionally left blank
 
-	bool result = list_equals(list, expected);
+	bool result = listEquals(list, expected);
 
-	list_destroy(list);
-	list_destroy(expected);
+	listDestroy(list);
+	listDestroy(expected);
 
 	return result;
 }
@@ -561,34 +561,34 @@ bool test_clear() {
 bool test_contains_all() {
 	announce_test("list_contains_all");
 
-	StringList* list = list_init();
-	list_add(list, "a");
-	list_add(list, "b");
-	list_add(list, "c");
-	list_add(list, "d");
-	list_add(list, "e");
-	list_add(list, "f");
+	StringList* list = listNew();
+	listAdd(list, "a");
+	listAdd(list, "b");
+	listAdd(list, "c");
+	listAdd(list, "d");
+	listAdd(list, "e");
+	listAdd(list, "f");
 
 
-	StringList* sublist = list_init();
-	list_add(sublist, "f");
-	list_add(sublist, "a");
-	list_add(sublist, "d");
-	list_add(sublist, "e");
-	list_add(sublist, "b");
-	list_add(sublist, "f");
+	StringList* sublist = listNew();
+	listAdd(sublist, "f");
+	listAdd(sublist, "a");
+	listAdd(sublist, "d");
+	listAdd(sublist, "e");
+	listAdd(sublist, "b");
+	listAdd(sublist, "f");
 
-	bool result_a = list_contains_all(list, sublist);
+	bool result_a = listContainsAll(list, sublist);
 
-	list_add(sublist, "z"); // add an element not in the original list
+	listAdd(sublist, "z"); // add an element not in the original list
 
 	bool result = (
 		result_a &&
-		!list_contains_all(list, sublist)
+		!listContainsAll(list, sublist)
 	);
 
-	list_destroy(list);
-	list_destroy(sublist);
+	listDestroy(list);
+	listDestroy(sublist);
 
 	return result;
 }
@@ -600,13 +600,13 @@ bool test_contains_all() {
 bool test_sublist() {
 	announce_test("list_sublist");
 
-	StringList* list = list_init();
+	StringList* list = listNew();
 
 	// TODO
 
 	bool result = false;
 
-	list_destroy(list);
+	listDestroy(list);
 
 	return result;
 }
